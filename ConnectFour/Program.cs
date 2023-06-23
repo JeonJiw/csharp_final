@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Drawing;
 
 namespace ConnectFour
@@ -68,15 +69,15 @@ namespace ConnectFour
 
         public int GetPosition()
         {
-            //Console.Write($"Player {Name}, enter the column number to drop your token: ");
+            Console.Write($"Player {Name}, enter the column number to drop your token: ");
             int column = int.Parse(Console.ReadLine());
-           
             return column;
+            
         }
 
         public override string ToString()
         {
-            return $"${Name}";
+            return $"{Name}";
         }
     }
 
@@ -106,17 +107,23 @@ namespace ConnectFour
     {
         public static List<IPlayer> _playersList;
         private static int _curPlayer;
-        public static char[,] gameBoard = new char[6, 7];
+        public static char[,] gameBoard;
+        private static int rows;
+        private static int columns;
 
         static ConnectFourGame()
         {
             _playersList = new List<IPlayer>();
             _curPlayer = 0;
+            rows = 6;
+            columns = 7;
+            gameBoard = new char[rows, columns];
         }
 
         public ConnectFourGame()
         {
         }
+
         public static void AddPlayer(IPlayer player)
         {
             _playersList.Add(player);
@@ -124,125 +131,103 @@ namespace ConnectFour
 
         public static bool PlayWithHuman()
         {
-            Console.WriteLine("Connect 4 Starts!");
-            return true;
+            bool gameOver = false;
+            do
+            {
+                IPlayer currentPlayer = _playersList[_curPlayer];
+                Console.WriteLine($"Now Palying Player:{currentPlayer.GetName()}");
+                int column = currentPlayer.GetPosition() - 1;
+                if (IsValidMove(column))
+                {
+                    PutToken(column);
+                    if (CheckResult() == true)
+                    {
+                        gameOver = true;
+                    }
+                    DisplayBoard();
+                    _curPlayer = (_curPlayer + 1) % _playersList.Count;
+                }
+                else{
+                    Console.WriteLine("Invalid move, try again!");
+                }
+                
+            } while (gameOver==true);
+
+            return gameOver;
         }
         
         public static bool PlayWithAI()
         {
             return true;
         }
-        
+
+        private static void PutToken(int column)
+        {
+            int row = FindRow(column);
+            
+            gameBoard[row,column] = (char)1;
+        }
+
+        private static int FindRow(int column)
+        {
+            for (int row = rows - 1; row >= 0; row--)
+            {
+                if (gameBoard[row, column] == '\0')
+                {
+                    return row;
+                }
+            }
+            return -1;
+        }
+
+        private static bool IsValidMove(int column)
+        {
+            Console.WriteLine("Checking the validation.");
+            if(column >= gameBoard.GetLength(1))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private static bool CheckResult()
+        {
+            bool result = false;
+            Console.WriteLine("Checking the result.");
+            //vertical
+            //horizontal
+            //diagonal
+            return result;
+
+        }
+
+        private static void DisplayBoard()
+        {
+            for(int i = 0; i < gameBoard.GetLength(0); i++)
+            {
+                for(int j = 0; j < gameBoard.GetLength(1); j++)
+                {
+                    //Console.Write($"{0} " + gameBoard[i,j]);
+                    Console.Write("# ");
+                }
+                Console.WriteLine();
+            }
+        }
+
         public static void ShowResult()
         {
             Console.WriteLine($"It is a Connect 4.{_playersList[_curPlayer]} Wins!");
         }
     }
 
-    /*
-    public class ConnectFourGame
-    {
-        public string Name { get; set; }
-        public char position;
-        public char[,] gameBoard = new char[6, 7];
-        //private static Random r; //for the AI
-        private static List<ConnectFourGame> _playersList;
-        private static int count;
-
-        static ConnectFourGame()
-        {
-            _playersList = new List<ConnectFourGame>();
-            count = 0;
-        }
-        public ConnectFourGame()
-        {
-        }
-        public ConnectFourGame(string name)
-        {
-            Name = name;
-        }
-        public override string ToString()
-        {
-            return $"Name: {Name}";
-        }
-        public static void AddAPlayer(string name)
-        {
-            var player = new ConnectFourGame
-            {
-                Name = name
-            };
-            _playersList.Add(player);
-        }
-
-        public static bool Play1()
-        {
-            return true;
-        }
-        public static bool Play2()
-        {
-            Console.WriteLine($"Now Palying Player : {_playersList[count].Name} ");
-            Console.WriteLine("Enter a column's number: ");
-            string userInput = Console.ReadLine();
-
-            if(userInput == "exit")
-            {
-                return false;
-            } else
-            {
-
-            }
-            /*
-            
-            if (userInput > _hiddenNo)
-            {
-                Console.WriteLine("Guess Lower...");
-            }
-            else if (userInput < _hiddenNo)
-            {
-                Console.WriteLine("Guess Heigher...");
-            }
-            else
-            {
-                _playersList[count].Score += 10;
-                Console.WriteLine($"Congratulations....Player {count + 1}: {_playersList[count].Name}.");
-                return false;
-            }
-            if (Math.Abs(userInput - _hiddenNo) <= 5)
-            {
-                _playersList[count].Score += 7;
-            }
-            else if (Math.Abs(userInput - _hiddenNo) <= 10)
-            {
-                _playersList[count].Score += 5;
-            }
-            else if (Math.Abs(userInput - _hiddenNo) <= 15)
-            {
-                _playersList[count].Score += 3;
-            }
-            else if (Math.Abs(userInput - _hiddenNo) <= 20)
-            {
-                _playersList[count].Score += 2;
-            }
-            else
-            {
-                _playersList[count].Score += 1;
-            }
-            count = (count + 1) % _playersList.Count;
-            *//*
-            return true;
-        }
-        public static void ShowResult()
-        {
-            Console.WriteLine($"It is a Connect 4.{_playersList[count].Name} Wins!");
-        }
-    }
-    */
+  
         class Program
     {
         static void Main(string[] args)
         {
             bool restart = false;
             do {
+                //when do restart, reset all
                 Console.WriteLine("Please select a game mode: \n(1) 1-player mode \n(2) 2-player mode");
                 string gameMode = Console.ReadLine();
                 if (gameMode == "1")
