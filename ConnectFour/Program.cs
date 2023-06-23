@@ -154,6 +154,10 @@ namespace ConnectFour
                 {
                     restart = true;
                 }
+                else
+                {
+                    restart = false;
+                }
             } while (restart == true);
             Console.Read();
             
