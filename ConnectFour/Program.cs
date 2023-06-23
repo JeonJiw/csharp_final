@@ -22,9 +22,124 @@ namespace ConnectFour
         - horizontal
         - vertical
         - diagonal
+    5. Interface
+        - GetName
+        - GetPosition
+    6. Classes
+        1) Program
+        +) Player
+        2) HumanPlayer : Player
+            - GetName
+            - GetPosition : ReadLine
+        3) AIPlayer : Player
+            - GetName
+            - GetPosition : Random
+        4) ConnectFourGame
+            - PlayerList
+            - CreatePlayer
+            - ChangeTurn
+            - Play
+            - CheckHorizontal
+            - CheckVertical
+            - CheckDiagonal
 
      */
 
+
+    public interface IPlayer
+    {
+        string GetName();
+        int GetPosition();
+    }
+
+    public class HumanPlayer : IPlayer
+    {
+        public string Name { get; set; }
+
+        public HumanPlayer(string playerName)
+        {
+            Name = playerName;
+        }
+
+        public string GetName()
+        {
+            return Name;
+        }
+
+        public int GetPosition()
+        {
+            //Console.Write($"Player {Name}, enter the column number to drop your token: ");
+            int column = int.Parse(Console.ReadLine());
+           
+            return column;
+        }
+
+        public override string ToString()
+        {
+            return $"${Name}";
+        }
+    }
+
+    /*
+    public class AIPlayer : IPlayer
+    {
+        public string Name { get; set; }
+
+        public string GetName()
+        {
+            return Name;
+        }
+
+        public int GetPosition()
+        {
+            Random random = new Random();
+            return random.Next(1, 8); // Generate a random column number between 1 and 7 (inclusive)
+        }
+        public override string ToString()
+        {
+            return $"${Name}";
+        }
+    }
+    */
+
+    public class ConnectFourGame
+    {
+        public static List<IPlayer> _playersList;
+        private static int _curPlayer;
+        public static char[,] gameBoard = new char[6, 7];
+
+        static ConnectFourGame()
+        {
+            _playersList = new List<IPlayer>();
+            _curPlayer = 0;
+        }
+
+        public ConnectFourGame()
+        {
+        }
+        public static void AddPlayer(IPlayer player)
+        {
+            _playersList.Add(player);
+        }
+
+        public static bool PlayWithHuman()
+        {
+            Console.WriteLine("Connect 4 Starts!");
+            return true;
+        }
+        
+        public static bool PlayWithAI()
+        {
+            return true;
+        }
+        
+        public static void ShowResult()
+        {
+            Console.WriteLine($"It is a Connect 4.{_playersList[_curPlayer]} Wins!");
+        }
+    }
+
+    /*
     public class ConnectFourGame
     {
         public string Name { get; set; }
@@ -113,7 +228,7 @@ namespace ConnectFour
                 _playersList[count].Score += 1;
             }
             count = (count + 1) % _playersList.Count;
-            */
+            *//*
             return true;
         }
         public static void ShowResult()
@@ -121,7 +236,7 @@ namespace ConnectFour
             Console.WriteLine($"It is a Connect 4.{_playersList[count].Name} Wins!");
         }
     }
-
+    */
         class Program
     {
         static void Main(string[] args)
@@ -132,18 +247,20 @@ namespace ConnectFour
                 string gameMode = Console.ReadLine();
                 if (gameMode == "1")
                 {
-                    while (ConnectFourGame.Play1()) ;
+                    while (ConnectFourGame.PlayWithAI()) ;
                 }
                 else if (gameMode == "2")
                 {
-                    Console.WriteLine("Add Player Names.");
+                    Console.WriteLine("Add the first player Names.");
                     string name;
                     for (int i = 0; i < 2; i++)
                     {
+                        Console.Write($"Player {i+1}: ");
                         name = Console.ReadLine();
-                        ConnectFourGame.AddAPlayer(name);
+                        IPlayer player = new HumanPlayer(name);
+                        ConnectFourGame.AddPlayer(player);
                     }
-                    while (ConnectFourGame.Play2()) ;
+                    while (ConnectFourGame.PlayWithHuman()) ;
                 }
 
                 ConnectFourGame.ShowResult();
