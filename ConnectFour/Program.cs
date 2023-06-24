@@ -140,10 +140,11 @@ namespace ConnectFour
                 if (IsValidMove(column))
                 {
                     PutToken(column);
+                    /*
                     if (CheckResult() == true)
                     {
                         gameOver = true;
-                    }
+                    }*/
                     DisplayBoard();
                     _curPlayer = (_curPlayer + 1) % _playersList.Count;
                 }
@@ -164,8 +165,14 @@ namespace ConnectFour
         private static void PutToken(int column)
         {
             int row = FindRow(column);
-            
-            gameBoard[row,column] = (char)1;
+            if (_curPlayer == 0)
+            {
+                gameBoard[row,column] = 'O';
+            }
+            else
+            {
+                gameBoard[row, column] = 'X';
+            }
         }
 
         private static int FindRow(int column)
@@ -183,7 +190,7 @@ namespace ConnectFour
         private static bool IsValidMove(int column)
         {
             Console.WriteLine("Checking the validation.");
-            if(column >= gameBoard.GetLength(1))
+            if(column >= gameBoard.GetLength(1)-1)
             {
                 return false;
             }
@@ -207,8 +214,8 @@ namespace ConnectFour
             {
                 for(int j = 0; j < gameBoard.GetLength(1); j++)
                 {
-                    //Console.Write($"{0} " + gameBoard[i,j]);
-                    Console.Write("# ");
+                    char pos = gameBoard[i, j] == '\0' ? '#' : gameBoard[i, j];
+                    Console.Write($"{pos} ");
                 }
                 Console.WriteLine();
             }
@@ -232,7 +239,7 @@ namespace ConnectFour
                 string gameMode = Console.ReadLine();
                 if (gameMode == "1")
                 {
-                    while (ConnectFourGame.PlayWithAI()) ;
+                    while (!ConnectFourGame.PlayWithAI()) ;
                 }
                 else if (gameMode == "2")
                 {
@@ -245,7 +252,7 @@ namespace ConnectFour
                         IPlayer player = new HumanPlayer(name);
                         ConnectFourGame.AddPlayer(player);
                     }
-                    while (ConnectFourGame.PlayWithHuman()) ;
+                    while (!ConnectFourGame.PlayWithHuman()) ;
                 }
 
                 ConnectFourGame.ShowResult();
