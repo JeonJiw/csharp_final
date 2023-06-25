@@ -6,47 +6,6 @@ using System.Drawing;
 namespace ConnectFour
 {
 
-    /*
-    1. Players
-        - 2 player mode
-        - 1 player mode : ramdom play
-        - name, count?,
-    2. Game
-        - choose the mode: 1 or 2
-        - show whose turn
-        - show the game board
-        - show the result
-    3. Column arrays
-        - columns name : numbers
-        - remember previous locations
-    4. Check connect four
-        - horizontal
-        - vertical
-        - diagonal
-    5. Interface
-        - GetName
-        - GetPosition
-    6. Classes
-        1) Program
-        +) Player
-        2) HumanPlayer : Player
-            - GetName
-            - GetPosition : ReadLine
-        3) AIPlayer : Player
-            - GetName
-            - GetPosition : Random
-        4) ConnectFourGame
-            - PlayerList
-            - CreatePlayer
-            - ChangeTurn
-            - Play
-            - CheckHorizontal
-            - CheckVertical
-            - CheckDiagonal
-
-     */
-
-
     public interface IPlayer
     {
         string GetName();
@@ -69,22 +28,26 @@ namespace ConnectFour
 
         public int GetPosition()
         {
-            Console.Write($"Player {Name}, enter the column number to drop your token: ");
+            Console.Write($"Player {Name}, enter the column number: ");
             int column = int.Parse(Console.ReadLine());
             return column;
             
         }
-
         public override string ToString()
         {
             return $"{Name}";
         }
     }
 
-    /*
+    
     public class AIPlayer : IPlayer
     {
         public string Name { get; set; }
+
+        public AIPlayer()
+        {
+            Name = "AI";
+        }
 
         public string GetName()
         {
@@ -94,14 +57,14 @@ namespace ConnectFour
         public int GetPosition()
         {
             Random random = new Random();
-            return random.Next(1, 8); // Generate a random column number between 1 and 7 (inclusive)
+            return random.Next(1, 8);
         }
         public override string ToString()
         {
-            return $"${Name}";
+            return $"{Name}";
         }
     }
-    */
+    
 
     public class ConnectFourGame
     {
@@ -129,7 +92,7 @@ namespace ConnectFour
             _playersList.Add(player);
         }
 
-        public static bool PlayWithHuman()
+        public static bool PlayConnectFour()
         {
             bool gameOver = false;
             do
@@ -298,7 +261,6 @@ namespace ConnectFour
             for (int c = 0; c < columns; c++)
             {
                 char curValue = gameBoard[row, c];
-                Console.WriteLine(curValue == symbol);
                 if (gameBoard[row, c] == symbol)
                 {
                     if (count == 0 && c > 4)
@@ -394,7 +356,7 @@ namespace ConnectFour
                     IPlayer player2 = new HumanPlayer("X");
                     ConnectFourGame.AddPlayer(player1);
                     ConnectFourGame.AddPlayer(player2);
-                    while (!ConnectFourGame.PlayWithHuman());
+                    while (!ConnectFourGame.PlayConnectFour());
                 }
                 else
                 {
@@ -403,11 +365,21 @@ namespace ConnectFour
                     string gameMode = Console.ReadLine();
                     if (gameMode == "1")
                     {
-                        while (!ConnectFourGame.PlayWithAI()) ;
+                        Console.WriteLine("Add your names.");
+                        string name;
+                        Console.Write("Player 1: ");
+                        name = Console.ReadLine();
+                        IPlayer player = new HumanPlayer(name);
+                        IPlayer AI = new AIPlayer();
+                        Console.WriteLine("Player 2: AI");
+                        ConnectFourGame.AddPlayer(player);
+                        ConnectFourGame.AddPlayer(AI);
+
+                        while (!ConnectFourGame.PlayConnectFour()) ;
                     }
                     else if (gameMode == "2")
                     {
-                        Console.WriteLine("Add the first player Names.");
+                        Console.WriteLine("Add the first player name.");
                         string name;
                         for (int i = 0; i < 2; i++)
                         {
@@ -416,7 +388,7 @@ namespace ConnectFour
                             IPlayer player = new HumanPlayer(name);
                             ConnectFourGame.AddPlayer(player);
                         }
-                        while (!ConnectFourGame.PlayWithHuman());
+                        while (!ConnectFourGame.PlayConnectFour());
                     }
                 }
             ConnectFourGame.ShowResult();
