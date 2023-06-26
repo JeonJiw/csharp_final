@@ -12,21 +12,28 @@ namespace ConnectFour
         int GetPosition();
     }
 
-    public class HumanPlayer : IPlayer
+    public abstract class Player : IPlayer
     {
-        public string Name { get; set; }
+        public string Name { get; protected set; }
+
+        public abstract string GetName();
+        public abstract int GetPosition();
+    }
+
+    public class HumanPlayer : Player
+    {
 
         public HumanPlayer(string playerName)
         {
             Name = playerName;
         }
 
-        public string GetName()
+        public override string GetName()
         {
             return Name;
         }
 
-        public int GetPosition()
+        public override int GetPosition()
         {
             Console.Write($"Player {Name}, enter the column number: ");
             int column = int.Parse(Console.ReadLine());
@@ -40,7 +47,7 @@ namespace ConnectFour
     }
 
     
-    public class AIPlayer : IPlayer
+    public class AIPlayer : Player
     {
         public string Name { get; set; }
 
@@ -49,12 +56,12 @@ namespace ConnectFour
             Name = "AI";
         }
 
-        public string GetName()
+        public override string GetName()
         {
             return Name;
         }
 
-        public int GetPosition()
+        public override int GetPosition()
         {
             Random random = new Random();
             return random.Next(1, 8);
@@ -123,10 +130,6 @@ namespace ConnectFour
             return gameOver;
         }
         
-        public static bool PlayWithAI()
-        {
-            return true;
-        }
 
         private static int PutToken(int column)
         {
