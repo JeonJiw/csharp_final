@@ -48,9 +48,7 @@ namespace ConnectFour
 
     
     public class AIPlayer : Player
-    {
-        public string Name { get; set; }
-
+    { 
         public AIPlayer()
         {
             Name = "AI";
